@@ -31,12 +31,13 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         length = int(s.headers['Content-Length'])
         content = s.rfile.read(length)
         try:
-            payload = json.loads(content)       # assume content is JSON
+            payload = json.loads(content)       
             handle_hook(payload)
             s.send_response(200)
-        except:
+        except ValueError, e:                   # catch bad JSON
             s.send_response(400)
             pass
+        
 
 if __name__ == '__main__':
     server_class = BaseHTTPServer.HTTPServer

@@ -14,9 +14,8 @@ PORT_NUMBER = int(sys.argv[2])
 
 def handle_hook(payload):
     """ This is the actual handler for hooks """
-    pass
-
-
+    print payload
+    
 class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """ Base class to handle hooks forked from FiloSottile/HookHandler.py"""
     server_version = "simplehandler/1.0"
@@ -31,10 +30,13 @@ class HookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         length = int(s.headers['Content-Length'])
         content = s.rfile.read(length)
-        payload = json.loads(content)       # assume content is JSON
-        handle_hook(payload)
-        s.send_response(200)
-
+        try:
+            payload = json.loads(content)       # assume content is JSON
+            handle_hook(payload)
+            s.send_response(200)
+        except:
+            s.send_response(400)
+            pass
 
 if __name__ == '__main__':
     server_class = BaseHTTPServer.HTTPServer
